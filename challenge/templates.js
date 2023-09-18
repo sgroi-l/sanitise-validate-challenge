@@ -1,15 +1,31 @@
-function home(posts) {
+// sanitise function
+function sanitize(string) {
+  return string.replace(/</g, "&lt;");
+}
+
+function home(posts, errors = {}, values = {}) {
   const title = "All posts";
+  const { nickname = "", message = "" } = values;
   const content = /*html*/ `
     <h2>New post</h2>
     <form method="POST">
       <p>
         <label for="nickname">Nickname</label>
-        <input id="nickname" name="nickname">
+        <input id="nickname" name="nickname" value="${sanitize(nickname)}">
+        ${
+          errors.nickname
+            ? `<span style="color: red">${errors.nickname}</span>`
+            : ""
+        }
       </p>
       <p>
         <label for="message">Message</label>
-        <textarea id="message" name="message"></textarea>
+        <textarea id="message" name="message">${sanitize(message)}</textarea>
+        ${
+          errors.message
+            ? `<span style="color: red">${errors.message}</span>`
+            : ""
+        }
       </p>
       <button>Send</button>
     </form>
@@ -24,10 +40,11 @@ function home(posts) {
 function postItem(post) {
   const date = new Date(post.created);
   const prettyDate = date.toLocaleString("en-GB");
-  return `
+
+  return /*html*/ `
     <li>
-      <p>${post.message}</p>
-      <p>—${post.nickname} | ${prettyDate}</p>
+      <p>${sanitize(post.message)}</p>
+      <p>—${sanitize(post.nickname)} | ${prettyDate}</p>
     </li>
   `;
 }
